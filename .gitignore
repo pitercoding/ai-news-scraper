@@ -23,7 +23,7 @@ $RECYCLE.BIN/
 .idea/
 *.iml
 
-# Ignore local VS Code settings but keep shared configs if desired
+# Keep shared VS Code configuration
 
 !.vscode/extensions.json
 !.vscode/settings.json
@@ -32,7 +32,7 @@ $RECYCLE.BIN/
 
 # ==========================================
 
-# Environment variables
+# Environment Variables
 
 # ==========================================
 
@@ -43,20 +43,85 @@ $RECYCLE.BIN/
 
 # ==========================================
 
+# Python
+
+# ==========================================
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Python Virtual Environments
+
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python Packaging
+
+*.egg
+*.egg-info/
+dist/
+build/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+MANIFEST
+
+# ==========================================
+
+# Python Testing / Coverage
+
+# ==========================================
+
+.pytest_cache/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# ==========================================
+
+# Python Type Checking / Linters
+
+# ==========================================
+
+.mypy_cache/
+.pyright/
+.pyre/
+.ruff_cache/
+
+# ==========================================
+
+# SQLite / Local Databases
+
+# ==========================================
+
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+
+# ==========================================
+
 # Logs
 
 # ==========================================
 
 *.log
 logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 
 # ==========================================
 
-# Node.js / npm
+# Node.js
 
 # ==========================================
 
@@ -77,17 +142,6 @@ out/
 
 # ==========================================
 
-# React / Vite
-
-# ==========================================
-
-dist/
-build/
-.vite/
-.parcel-cache/
-
-# ==========================================
-
 # TypeScript
 
 # ==========================================
@@ -96,111 +150,18 @@ build/
 
 # ==========================================
 
-# Python
+# Frontend Build / Cache
 
 # ==========================================
 
-**pycache**/
-*.py[cod]
-*$py.class
+.vite/
+.parcel-cache/
+.swc/
+.cache/
 
 # ==========================================
 
-# Python Virtual Environments
-
-# ==========================================
-
-.venv/
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# ==========================================
-
-# Python Packaging
-
-# ==========================================
-
-*.egg
-*.egg-info/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-MANIFEST
-
-# ==========================================
-
-# Python Testing
-
-# ==========================================
-
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-.hypothesis/
-
-# ==========================================
-
-# Python Type Checking / Linters
-
-# ==========================================
-
-.mypy_cache/
-.pyre/
-.pyright/
-.ruff_cache/
-
-# ==========================================
-
-# Jupyter Notebook
-
-# ==========================================
-
-.ipynb_checkpoints/
-
-# ==========================================
-
-# Python Project Tools
-
-# ==========================================
-
-.python-version
-.poetry/
-.uv/
-
-# ==========================================
-
-# SQLite / Local Databases
-
-# ==========================================
-
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
-*.sqlite-shm
-*.sqlite-wal
-
-# ==========================================
-
-# Coverage
-
-# ==========================================
-
-coverage/
-.coverage/
-coverage.xml
-coverage.out
-htmlcov/
-
-# ==========================================
-
-# Testing / E2E
+# End-to-End Testing
 
 # ==========================================
 
@@ -208,33 +169,13 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
-
 cypress/videos/
 cypress/screenshots/
 cypress/downloads/
 
 # ==========================================
 
-# Storybook
-
-# ==========================================
-
-storybook-static/
-
-# ==========================================
-
-# Caches
-
-# ==========================================
-
-.cache/
-.nx/
-.swc/
-.history/
-
-# ==========================================
-
-# Temporary files
+# Temporary Files
 
 # ==========================================
 
@@ -251,7 +192,7 @@ temp/
 
 # ==========================================
 
-# Generated files
+# Generated Files
 
 # ==========================================
 
@@ -272,7 +213,7 @@ generated/
 
 # ==========================================
 
-# Certificates / Keys
+# Certificates / Private Keys
 
 # ==========================================
 
