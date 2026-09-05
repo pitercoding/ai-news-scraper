@@ -43,3 +43,36 @@ def fetch_news(rss_url: str) -> list[dict]:
         articles.append(article)
 
     return articles
+
+def fetch_article_content(url: str) -> str:
+    response = requests.get(
+        url,
+        headers=HEADERS,
+        timeout=15
+    )
+
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    article_content = soup.find("div", class_="entry")
+
+    if not article_content:
+        return ""
+
+    content_parts = []
+
+    for element in article_content.find_all(
+        ["p", "h2"],
+        class_=lambda classes: classes
+        and (
+            "wp-block-paragraph" in classes
+            or "wp-block-heading" in classes
+        )
+    ):
+        text = element.get_text(" ", strip=True)
+
+        if text:
+            content_parts.append(text)
+
+    return "\n\n".join(content_parts)

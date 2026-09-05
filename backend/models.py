@@ -14,3 +14,4 @@ class Article(Base):
     url: Mapped[str] = mapped_column(String(1000), unique=True)
     published_at: Mapped[str] = mapped_column(String(100))
     summary: Mapped[str] = mapped_column(Text)
+    content: Mapped[str] = mapped_column(Text)

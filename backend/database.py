@@ -16,6 +16,15 @@ engine = create_engine(
 def create_tables():
     Base.metadata.create_all(engine)
 
+def article_exists(url: str) -> bool:
+    with Session(engine) as session:
+        statement = select(Article).where(
+            Article.url == url
+        )
+
+        existing_article = session.execute(statement).scalar_one_or_none()
+
+        return existing_article is not None
 
 def save_article(article_data: dict) -> bool:
     with Session(engine) as session:
