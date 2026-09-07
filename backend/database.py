@@ -16,6 +16,7 @@ engine = create_engine(
 def create_tables():
     Base.metadata.create_all(engine)
 
+
 def article_exists(url: str) -> bool:
     with Session(engine) as session:
         statement = select(Article).where(
@@ -25,6 +26,7 @@ def article_exists(url: str) -> bool:
         existing_article = session.execute(statement).scalar_one_or_none()
 
         return existing_article is not None
+    
 
 def save_article(article_data: dict) -> bool:
     with Session(engine) as session:
@@ -50,6 +52,20 @@ def get_articles():
         result = session.execute(statement)
 
         return result.scalars().all()
+
+
+def update_article_content(article_id: int, content: str):
+    with Session(engine) as session:
+        article = session.get(Article, article_id)
+
+        if not article:
+            return False
+
+        article.content = content
+
+        session.commit()
+
+        return True
 
 
 if __name__ == "__main__":

@@ -19,6 +19,10 @@ def clean_summary(html: str) -> str:
     return ""
 
 
+def clean_content(text: str) -> str:
+    return " ".join(text.split())
+
+
 def fetch_news(rss_url: str) -> list[dict]:
     response = requests.get(
         rss_url,
@@ -43,6 +47,7 @@ def fetch_news(rss_url: str) -> list[dict]:
         articles.append(article)
 
     return articles
+
 
 def fetch_article_content(url: str) -> str:
     response = requests.get(
@@ -70,7 +75,12 @@ def fetch_article_content(url: str) -> str:
             or "wp-block-heading" in classes
         )
     ):
-        text = element.get_text(" ", strip=True)
+        text = element.get_text(
+            " ",
+            strip=True
+        )
+
+        text = clean_content(text)
 
         if text:
             content_parts.append(text)

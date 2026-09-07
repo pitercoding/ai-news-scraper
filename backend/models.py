@@ -15,3 +15,6 @@ class Article(Base):
     published_at: Mapped[str] = mapped_column(String(100))
     summary: Mapped[str] = mapped_column(Text)
     content: Mapped[str] = mapped_column(Text)
+    ai_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    key_points: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True)
