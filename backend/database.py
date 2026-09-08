@@ -46,12 +46,33 @@ def save_article(article_data: dict) -> bool:
 
         return True
 
+
 def get_articles():
     with Session(engine) as session:
         statement = select(Article)
         result = session.execute(statement)
 
         return result.scalars().all()
+
+
+def get_articles_without_analysis():
+    with Session(engine) as session:
+        statement = select(Article).where(
+            Article.ai_summary.is_(None)
+        )
+
+        result = session.execute(statement)
+
+        return result.scalars().all()
+
+
+def get_article_by_url(url: str):
+    with Session(engine) as session:
+        statement = select(Article).where(
+            Article.url == url
+        )
+
+        return session.execute(statement).scalar_one_or_none()
 
 
 def update_article_content(article_id: int, content: str):
@@ -68,6 +89,28 @@ def update_article_content(article_id: int, content: str):
         return True
 
 
+def update_article_analysis(
+    article_id: int,
+    ai_summary: str,
+    key_points: str,
+    category: str,
+):
+    with Session(engine) as session:
+        article = session.get(Article, article_id)
+
+        if not article:
+            return False
+
+        article.ai_summary = ai_summary
+        article.key_points = key_points
+        article.category = category
+
+        session.commit()
+
+        return True
+
+
 if __name__ == "__main__":
     create_tables()
     print("Database tables created.")
+    
