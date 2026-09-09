@@ -26,7 +26,7 @@ def article_exists(url: str) -> bool:
         existing_article = session.execute(statement).scalar_one_or_none()
 
         return existing_article is not None
-    
+
 
 def save_article(article_data: dict) -> bool:
     with Session(engine) as session:
@@ -47,9 +47,26 @@ def save_article(article_data: dict) -> bool:
         return True
 
 
-def get_articles():
+def get_articles(
+    category: str | None = None,
+    search: str | None = None,
+):
     with Session(engine) as session:
         statement = select(Article)
+
+        if category:
+            statement = statement.where(
+                Article.category == category
+            )
+
+        if search:
+            search_pattern = f"%{search}%"
+
+            statement = statement.where(
+                Article.title.ilike(search_pattern)
+                | Article.summary.ilike(search_pattern)
+            )
+
         result = session.execute(statement)
 
         return result.scalars().all()
@@ -70,6 +87,15 @@ def get_article_by_url(url: str):
     with Session(engine) as session:
         statement = select(Article).where(
             Article.url == url
+        )
+
+        return session.execute(statement).scalar_one_or_none()
+
+
+def get_article_by_id(article_id: int):
+    with Session(engine) as session:
+        statement = select(Article).where(
+            Article.id == article_id
         )
 
         return session.execute(statement).scalar_one_or_none()
