@@ -52,7 +52,9 @@ def get_articles(
     search: str | None = None,
 ):
     with Session(engine) as session:
-        statement = select(Article)
+        statement = select(Article).order_by(
+            Article.published_at.desc()
+        )
 
         if category:
             statement = statement.where(

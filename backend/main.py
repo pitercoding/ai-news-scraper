@@ -16,19 +16,33 @@ RSS_URL = "https://tecnoblog.net/feed/"
 
 
 def main():
+    print("Fetching RSS feed...")
+
     articles = fetch_news(RSS_URL)
+
+    print(f"Found {len(articles)} articles.")
+    print("")
 
     new_articles = 0
     existing_articles = 0
 
-    for article in articles:
+    for index, article in enumerate(articles, start=1):
+        print(f"Processing article {index}/{len(articles)}:")
+        print(f"Title: {article['title']}")
+
         if article_exists(article["url"]):
             existing_articles += 1
+            print("Article already exists. Skipping.")
+            print("")
             continue
+
+        print("Fetching article content...")
 
         content = fetch_article_content(article["url"])
 
         article["content"] = content
+
+        print("Saving article...")
 
         was_saved = save_article(article)
 
@@ -38,6 +52,8 @@ def main():
             saved_article = get_article_by_url(
                 article["url"]
             )
+
+            print("Sending article to OpenAI...")
 
             prompt = create_article_prompt(
                 title=saved_article.title,
@@ -58,6 +74,9 @@ def main():
                 key_points=key_points_json,
                 category=analysis.category,
             )
+
+            print("Article processed successfully.")
+            print("")
 
     print("==========================================")
     print(f"New articles: {new_articles}")

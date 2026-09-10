@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -6,6 +8,13 @@ from bs4 import BeautifulSoup
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; ai-news-scraper/1.0)"
 }
+
+
+def parse_published_at(value: str) -> datetime:
+    return datetime.strptime(
+        value,
+        "%a, %d %b %Y %H:%M:%S %z",
+    )
 
 
 def clean_summary(html: str) -> str:
@@ -40,7 +49,9 @@ def fetch_news(rss_url: str) -> list[dict]:
         article = {
             "title": entry.get("title", ""),
             "url": entry.get("link", ""),
-            "published_at": entry.get("published", ""),
+            "published_at": parse_published_at(
+                entry.get("published", "")
+            ),
             "summary": clean_summary(entry.get("summary", "")),
         }
 
