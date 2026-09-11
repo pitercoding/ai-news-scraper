@@ -18,10 +18,14 @@ app = FastAPI(
 def list_articles(
     category: str | None = None,
     search: str | None = None,
+    limit: int = 20,
+    offset: int = 0,
 ):
     return get_articles(
         category,
         search,
+        limit=limit,
+        offset=offset,
     )
 
 

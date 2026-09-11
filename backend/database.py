@@ -50,6 +50,8 @@ def save_article(article_data: dict) -> bool:
 def get_articles(
     category: str | None = None,
     search: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ):
     with Session(engine) as session:
         statement = select(Article).order_by(
@@ -68,6 +70,12 @@ def get_articles(
                 Article.title.ilike(search_pattern)
                 | Article.summary.ilike(search_pattern)
             )
+
+        if limit is not None:
+            statement = statement.limit(limit)
+
+        if offset is not None:
+            statement = statement.offset(offset)
 
         result = session.execute(statement)
 
