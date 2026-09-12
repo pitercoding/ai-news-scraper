@@ -47,3 +47,10 @@ class ArticleResponse(BaseModel):
             return json.loads(value)
 
         return value
+
+
+class ArticlePaginationResponse(BaseModel):
+    items: list[ArticleListResponse]
+    total: int
+    limit: int
+    offset: int

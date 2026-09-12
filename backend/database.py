@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from models import Article, Base
@@ -109,6 +109,31 @@ def get_article_by_id(article_id: int):
         )
 
         return session.execute(statement).scalar_one_or_none()
+
+
+def count_articles(
+    category: str | None = None,
+    search: str | None = None,
+):
+    with Session(engine) as session:
+        statement = select(
+            func.count(Article.id)
+        )
+
+        if category:
+            statement = statement.where(
+                Article.category == category
+            )
+
+        if search:
+            search_pattern = f"%{search}%"
+
+            statement = statement.where(
+                Article.title.ilike(search_pattern)
+                | Article.summary.ilike(search_pattern)
+            )
+
+        return session.execute(statement).scalar_one()
 
 
 def update_article_content(article_id: int, content: str):
