@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 
 from database import (
     count_articles,
@@ -6,10 +6,10 @@ from database import (
     get_articles,
 )
 from schemas import (
-    ArticleListResponse,
     ArticlePaginationResponse,
     ArticleResponse,
 )
+
 
 app = FastAPI(
     title="AI News Scraper API",
@@ -25,8 +25,15 @@ app = FastAPI(
 def list_articles(
     category: str | None = None,
     search: str | None = None,
-    limit: int = 20,
-    offset: int = 0,
+    limit: int = Query(
+        default=20,
+        ge=1,
+        le=100,
+    ),
+    offset: int = Query(
+        default=0,
+        ge=0,
+    ),
 ):
     articles = get_articles(
         category=category,
@@ -46,6 +53,7 @@ def list_articles(
         "limit": limit,
         "offset": offset,
     }
+
 
 @app.get(
     "/articles/{article_id}",
