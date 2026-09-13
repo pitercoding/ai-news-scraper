@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, func, select
+from sqlalchemy import create_engine, distinct, func, select
 from sqlalchemy.orm import Session
 
 from models import Article, Base
@@ -109,6 +109,19 @@ def get_article_by_id(article_id: int):
         )
 
         return session.execute(statement).scalar_one_or_none()
+
+
+def get_categories():
+    with Session(engine) as session:
+        statement = (
+            select(distinct(Article.category))
+            .where(Article.category.is_not(None))
+            .order_by(Article.category)
+        )
+
+        result = session.execute(statement)
+
+        return result.scalars().all()
 
 
 def count_articles(

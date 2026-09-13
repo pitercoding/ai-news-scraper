@@ -4,6 +4,7 @@ from database import (
     count_articles,
     get_article_by_id,
     get_articles,
+    get_categories,
 )
 from schemas import (
     ArticlePaginationResponse,
@@ -53,6 +54,14 @@ def list_articles(
         "limit": limit,
         "offset": offset,
     }
+
+
+@app.get(
+    "/categories",
+    response_model=list[str],
+)
+def list_categories():
+    return get_categories()
 
 
 @app.get(
