@@ -8,16 +8,29 @@ export default function ArticleCard({
     article,
 }: ArticleCardProps) {
     return (
-        <article>
-            <h2>{article.title}</h2>
-
+        <article className="article-card">
             {article.category && (
-                <p>
-                    Category: {article.category}
-                </p>
+                <span className="article-category">
+                    {article.category}
+                </span>
             )}
 
-            <p>{article.summary}</p>
+            <h2 className="article-title">
+                {article.title}
+            </h2>
+
+            <p className="article-summary">
+                {article.summary}
+            </p>
+
+            <a
+                className="article-link"
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Read original article →
+            </a>
         </article>
     );
 }
