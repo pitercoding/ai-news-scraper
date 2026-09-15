@@ -1,9 +1,26 @@
-import { getArticles } from "@/services/articleService";
 import ArticleCard from "@/components/ArticleCard";
+import CategoryFilter from "@/components/CategoryFilter";
+import {
+  getArticles,
+  getCategories,
+} from "@/services/articleService";
 
+interface HomeProps { 
+  searchParams: Promise<{ 
+    category?: string;
+  }>;
+}
 
-export default async function Home() {
-  const data = await getArticles();
+export default async function Home({
+  searchParams,
+}: HomeProps) {
+  const params = await searchParams;
+  
+  const data = await getArticles({
+    category: params.category,
+  });
+
+  const categories = await getCategories();
 
   return (
     <main>
@@ -13,9 +30,13 @@ export default async function Home() {
         Total articles: {data.total}
       </p>
 
-      <section> 
+      <CategoryFilter
+        categories={categories}
+      />
+
+      <section>
         {data.items.map((article) => (
-          <ArticleCard 
+          <ArticleCard
             key={article.id}
             article={article}
           />
