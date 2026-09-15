@@ -8,6 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface GetArticlesParams {
     category?: string;
+    search?: string;
 }
 
 
@@ -20,6 +21,13 @@ export async function getArticles(
         searchParams.set(
             "category",
             params.category,
+        );
+    }
+
+    if (params?.search) {
+        searchParams.set(
+            "search",
+            params.search,
         );
     }
 

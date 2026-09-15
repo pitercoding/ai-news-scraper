@@ -40,6 +40,7 @@ export default function CategoryFilter({
 
     return (
         <select
+            className="category-filter"
             value={selectedCategory}
             onChange={handleCategoryChange}
         >
