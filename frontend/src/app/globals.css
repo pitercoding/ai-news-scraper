@@ -140,6 +140,40 @@ section {
   cursor: pointer;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.pagination button {
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-background);
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--background);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 @media (max-width: 900px) {
   section {
     grid-template-columns: repeat(2, 1fr);
@@ -176,5 +210,18 @@ section {
 
   .category-filter {
     width: 100%;
+  }
+
+  .pagination {
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .pagination button {
+    padding: 9px 12px;
+  }
+
+  .pagination span {
+    font-size: 13px;
   }
 }

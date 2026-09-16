@@ -1,6 +1,7 @@
 import ArticleCard from "@/components/ArticleCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import SearchBar from "@/components/SearchBar";
+import Pagination from "@/components/Pagination";
 import {
   getArticles,
   getCategories,
@@ -11,6 +12,7 @@ interface HomeProps {
   searchParams: Promise<{
     category?: string;
     search?: string;
+    page?: string;
   }>;
 }
 
@@ -20,10 +22,22 @@ export default async function Home({
 }: HomeProps) {
   const params = await searchParams;
 
+  const limit = 12;
+
+  const page = Number(params.page) || 1;
+
+  const offset = (page - 1) * limit;
+
   const data = await getArticles({
     category: params.category,
     search: params.search,
+    limit,
+    offset,
   });
+
+  const totalPages = Math.ceil(
+    data.total / limit,
+  );
 
   const categories = await getCategories();
 
@@ -51,6 +65,13 @@ export default async function Home({
           />
         ))}
       </section>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+        />
+      )}
     </main>
   );
 }

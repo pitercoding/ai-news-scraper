@@ -9,6 +9,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 interface GetArticlesParams {
     category?: string;
     search?: string;
+    limit?: number;
+    offset?: number;
 }
 
 
@@ -28,6 +30,20 @@ export async function getArticles(
         searchParams.set(
             "search",
             params.search,
+        );
+    }
+
+    if (params?.limit !== undefined) {
+        searchParams.set(
+            "limit",
+            params.limit.toString(),
+        );
+    }
+
+    if (params?.offset !== undefined) {
+        searchParams.set(
+            "offset",
+            params.offset.toString(),
         );
     }
 
