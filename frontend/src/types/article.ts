@@ -9,6 +9,10 @@ export interface Article {
     category: string | null;
 }
 
+export interface ArticleDetails extends Article {
+    content: string;
+}
+
 export interface ArticlePaginationResponse {
     items: Article[];
     total: number;

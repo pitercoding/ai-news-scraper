@@ -1,4 +1,6 @@
 import {
+    Article,
+    ArticleDetails,
     ArticlePaginationResponse,
 } from "@/types/article";
 
@@ -62,12 +64,23 @@ export async function getArticles(
     return response.json();
 }
 
-
 export async function getCategories(): Promise<string[]> {
     const response = await fetch(`${API_URL}/categories`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch categories.");
+    }
+
+    return response.json();
+}
+
+export async function getArticle(
+    id: number,
+): Promise<ArticleDetails> {
+    const response = await fetch(`${API_URL}/articles/${id}`);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch article.");
     }
 
     return response.json();

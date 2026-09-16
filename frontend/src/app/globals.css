@@ -174,6 +174,79 @@ section {
   font-weight: 600;
 }
 
+.article-details {
+  max-width: 900px;
+}
+
+.article-back-link {
+  display: inline-block;
+  margin-bottom: 32px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.article-back-link:hover {
+  text-decoration: underline;
+}
+
+.article-details-title {
+  margin: 16px 0;
+  font-size: 42px;
+  line-height: 1.2;
+}
+
+.article-details-summary {
+  margin: 0 0 40px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.article-details-content,
+.article-details-section {
+  margin-bottom: 40px;
+  padding: 28px;
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.article-details-content h2,
+.article-details-section h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+
+.article-details-content p,
+.article-details-section p {
+  margin: 0 0 20px;
+  color: var(--foreground);
+  line-height: 1.8;
+}
+
+.article-details-content p:last-child,
+.article-details-section p:last-child {
+  margin-bottom: 0;
+}
+
+.article-details-section ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.article-details-section li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.article-details-date {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 @media (max-width: 900px) {
   section {
     grid-template-columns: repeat(2, 1fr);

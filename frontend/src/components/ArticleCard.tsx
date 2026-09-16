@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Article } from "@/types/article";
 
 interface ArticleCardProps {
@@ -22,6 +24,13 @@ export default function ArticleCard({
             <p className="article-summary">
                 {article.summary}
             </p>
+
+            <Link
+                className="article-link"
+                href={`/articles/${article.id}`}
+            >
+                View details →
+            </Link>
 
             <a
                 className="article-link"
