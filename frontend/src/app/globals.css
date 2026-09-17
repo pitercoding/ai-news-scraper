@@ -48,10 +48,21 @@ section {
 .article-card {
   display: flex;
   flex-direction: column;
+  min-height: 280px;
   padding: 24px;
   background: var(--card-background);
   border: 1px solid var(--border);
   border-radius: 12px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.article-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+  transform: translateY(-2px);
 }
 
 .article-category {
@@ -71,17 +82,24 @@ section {
   margin: 0 0 12px;
   font-size: 20px;
   line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 
 .article-summary {
   margin: 0 0 24px;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
+}
+
+.article-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
 }
 
 .article-link {
-  margin-top: auto;
   color: var(--accent);
   font-size: 14px;
   font-weight: 600;
@@ -90,6 +108,15 @@ section {
 
 .article-link:hover {
   text-decoration: underline;
+}
+
+.article-external-link {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.article-external-link:hover {
+  color: var(--foreground);
 }
 
 .article-controls {
@@ -107,16 +134,27 @@ section {
 
 .article-controls input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card-background);
   color: var(--foreground);
   font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-controls input::placeholder {
+  color: var(--muted);
+}
+
+.article-controls input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 10%);
 }
 
 .article-controls button {
-  padding: 10px 18px;
+  padding: 11px 18px;
   border: none;
   border-radius: 8px;
   background: var(--accent);
@@ -124,20 +162,36 @@ section {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .article-controls button:hover {
-  opacity: 0.9;
+  background: #1d4ed8;
+}
+
+.article-controls button:active {
+  transform: translateY(1px);
 }
 
 .category-filter {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card-background);
   color: var(--foreground);
   font-size: 14px;
   cursor: pointer;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.category-filter:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 10%);
 }
 
 .pagination {
@@ -189,6 +243,12 @@ section {
 
 .article-back-link:hover {
   text-decoration: underline;
+}
+
+.article-details > .article-category {
+  display: block;
+  width: fit-content;
+  margin: 0 0 16px;
 }
 
 .article-details-title {
@@ -245,6 +305,88 @@ section {
   margin: 0 0 24px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--card-background);
+}
+
+.site-header-content {
+  width: min(1200px, 100% - 32px);
+  min-height: 64px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-logo {
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-logo:hover {
+  color: var(--accent);
+}
+
+.site-header nav {
+  display: flex;
+  gap: 20px;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-header nav a:hover {
+  color: var(--accent);
+}
+
+.empty-state,
+.loading,
+.error-page {
+  padding: 48px 24px;
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.empty-state h2,
+.error-page h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.empty-state p,
+.loading p,
+.error-page p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.error-page button {
+  margin-top: 20px;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.error-page button:hover {
+  background: #1d4ed8;
 }
 
 @media (max-width: 900px) {

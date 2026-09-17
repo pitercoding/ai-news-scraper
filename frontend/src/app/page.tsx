@@ -43,10 +43,10 @@ export default async function Home({
 
   return (
     <main>
-      <h1>AI News Scraper</h1>
+      <h1>Latest News</h1>
 
       <p>
-        Total articles: {data.total}
+        {data.total} articles
       </p>
 
       <div className="article-controls">
