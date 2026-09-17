@@ -9,6 +9,14 @@ export default function Header() {
                     className="site-logo"
                     href="/"
                 >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src="/logo.png"
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="site-logo-icon"
+                    />
                     AI News Scraper
                 </Link>
 

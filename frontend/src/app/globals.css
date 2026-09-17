@@ -322,6 +322,9 @@ section {
 }
 
 .site-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--foreground);
   font-size: 18px;
   font-weight: 700;
@@ -330,6 +333,11 @@ section {
 
 .site-logo:hover {
   color: var(--accent);
+}
+
+.site-logo-icon {
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .site-header nav {
