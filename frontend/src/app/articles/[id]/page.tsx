@@ -74,7 +74,7 @@ export default async function ArticleDetailsPage({
             </section>
 
             {article.ai_summary && (
-                <section className="article-details-section">
+                <section className="article-details-section article-ai-summary">
                     <h2>AI Summary</h2>
 
                     <p>{article.ai_summary}</p>
