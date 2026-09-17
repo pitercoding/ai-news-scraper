@@ -57,14 +57,25 @@ export default async function Home({
         />
       </div>
 
-      <section>
-        {data.items.map((article) => (
-          <ArticleCard
-            key={article.id}
-            article={article}
-          />
-        ))}
-      </section>
+      {data.items.length > 0 ? (
+        <section>
+          {data.items.map((article) => (
+            <ArticleCard
+              key={article.id}
+              article={article}
+            />
+          ))}
+        </section>
+      ) : (
+        <div className="empty-state">
+          <h2>No articles found</h2>
+
+          <p>
+            Try changing your search or category
+            filter.
+          </p>
+        </div>
+      )}
 
       {totalPages > 1 && (
         <Pagination
