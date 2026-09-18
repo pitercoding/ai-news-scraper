@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from api import app
 
-
 client = TestClient(app)
 
 
@@ -90,15 +89,9 @@ def test_get_articles_with_offset():
     assert len(second_data["items"]) <= 2
 
     if first_data["items"] and second_data["items"]:
-        first_ids = [
-            article["id"]
-            for article in first_data["items"]
-        ]
+        first_ids = [article["id"] for article in first_data["items"]]
 
-        second_ids = [
-            article["id"]
-            for article in second_data["items"]
-        ]
+        second_ids = [article["id"] for article in second_data["items"]]
 
         assert first_ids != second_ids
 
@@ -117,3 +110,22 @@ def test_get_articles_with_category():
 
     for article in data["items"]:
         assert article["category"] == "AI"
+
+
+def test_get_articles_with_search():
+    response = client.get(
+        "/articles?search=python",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "items" in data
+    assert "total" in data
+
+    for article in data["items"]:
+        title = article["title"].lower()
+        summary = article["summary"].lower()
+
+        assert "python" in title or "python" in summary
