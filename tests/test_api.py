@@ -101,3 +101,19 @@ def test_get_articles_with_offset():
         ]
 
         assert first_ids != second_ids
+
+
+def test_get_articles_with_category():
+    response = client.get(
+        "/articles?category=AI",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "items" in data
+    assert "total" in data
+
+    for article in data["items"]:
+        assert article["category"] == "AI"
