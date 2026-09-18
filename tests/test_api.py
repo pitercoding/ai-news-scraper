@@ -129,3 +129,24 @@ def test_get_articles_with_search():
         summary = article["summary"].lower()
 
         assert "python" in title or "python" in summary
+
+
+def test_get_articles_with_category_and_search():
+    response = client.get(
+        "/articles?category=AI&search=python",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "items" in data
+    assert "total" in data
+
+    for article in data["items"]:
+        assert article["category"] == "AI"
+
+        title = article["title"].lower()
+        summary = article["summary"].lower()
+
+        assert "python" in title or "python" in summary
