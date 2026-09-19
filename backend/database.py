@@ -1,10 +1,14 @@
+from pathlib import Path
+
 from sqlalchemy import create_engine, distinct, func, select
 from sqlalchemy.orm import Session
 
 from models import Article, Base
 
 
-DATABASE_URL = "sqlite:///./data/news.db"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "news.db"
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 
 engine = create_engine(
