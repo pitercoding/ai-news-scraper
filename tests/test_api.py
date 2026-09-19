@@ -240,3 +240,11 @@ def test_get_articles_with_invalid_limit_type():
     )
 
     assert response.status_code == 422
+
+
+def test_get_articles_with_invalid_offset_type():
+    response = client.get(
+        "/articles?offset=abc",
+    )
+
+    assert response.status_code == 422
