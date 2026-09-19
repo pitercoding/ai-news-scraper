@@ -248,3 +248,16 @@ def test_get_articles_with_invalid_offset_type():
     )
 
     assert response.status_code == 422
+
+
+def test_get_articles_with_search_no_results():
+    response = client.get(
+        "/articles?search=xyznonexistentterm",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["items"] == []
+    assert data["total"] == 0
