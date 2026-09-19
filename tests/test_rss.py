@@ -78,3 +78,58 @@ def test_fetch_news_skips_entries_with_invalid_published_date(monkeypatch):
     assert len(articles) == 1
     assert articles[0]["title"] == "Valid article"
     assert articles[0]["url"] == "https://example.com/valid"
+
+
+class _FakeHtmlResponse:
+    def __init__(self, text):
+        self.text = text
+
+    def raise_for_status(self):
+        pass
+
+
+def test_fetch_article_content_extracts_matching_paragraphs_and_headings(
+    monkeypatch,
+):
+    html = """
+    <html>
+    <body>
+        <div class="entry">
+            <h2 class="wp-block-heading">Introduction</h2>
+            <p class="wp-block-paragraph">This   is    the first paragraph.</p>
+            <p class="unrelated-class">This paragraph should be ignored.</p>
+            <p class="wp-block-paragraph">Second   paragraph
+            with line break.</p>
+        </div>
+        <div class="sidebar">
+            <p class="wp-block-paragraph">Sidebar content should be ignored.</p>
+        </div>
+    </body>
+    </html>
+    """
+
+    monkeypatch.setattr(
+        rss.requests, "get", lambda *args, **kwargs: _FakeHtmlResponse(html)
+    )
+
+    content = rss.fetch_article_content("https://example.com/article")
+
+    assert content == (
+        "Introduction\n\n"
+        "This is the first paragraph.\n\n"
+        "Second paragraph with line break."
+    )
+
+
+def test_fetch_article_content_returns_empty_string_when_entry_div_missing(
+    monkeypatch,
+):
+    html = "<html><body><div class=\"sidebar\">No entry here</div></body></html>"
+
+    monkeypatch.setattr(
+        rss.requests, "get", lambda *args, **kwargs: _FakeHtmlResponse(html)
+    )
+
+    content = rss.fetch_article_content("https://example.com/article")
+
+    assert content == ""
