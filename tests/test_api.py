@@ -208,3 +208,19 @@ def test_get_categories():
 
     for category in data:
         assert isinstance(category, str)
+
+
+def test_get_articles_with_invalid_limit():
+    response = client.get(
+        "/articles?limit=0",
+    )
+
+    assert response.status_code == 422
+
+
+def test_get_articles_with_limit_too_large():
+    response = client.get(
+        "/articles?limit=101",
+    )
+
+    assert response.status_code == 422
