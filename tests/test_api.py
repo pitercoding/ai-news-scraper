@@ -187,3 +187,12 @@ def test_get_article_by_id():
     assert isinstance(data["published_at"], str)
     assert isinstance(data["summary"], str)
     assert isinstance(data["content"], str)
+
+
+
+def test_get_article_not_found():
+    response = client.get(
+        "/articles/999999",
+    )
+
+    assert response.status_code == 404
