@@ -274,3 +274,14 @@ def test_get_articles_with_category_no_results():
 
     assert data["items"] == []
     assert data["total"] == 0
+
+
+def test_get_articles_with_default_pagination():
+    response = client.get("/articles")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["limit"] == 20
+    assert data["offset"] == 0
