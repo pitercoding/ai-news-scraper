@@ -150,3 +150,40 @@ def test_get_articles_with_category_and_search():
         summary = article["summary"].lower()
 
         assert "python" in title or "python" in summary
+
+
+def test_get_article_by_id():
+    articles_response = client.get("/articles")
+
+    assert articles_response.status_code == 200
+
+    articles_data = articles_response.json()
+
+    assert articles_data["items"]
+
+    article_id = articles_data["items"][0]["id"]
+
+    response = client.get(
+        f"/articles/{article_id}",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["id"] == article_id
+    assert "title" in data
+    assert "url" in data
+    assert "published_at" in data
+    assert "summary" in data
+    assert "content" in data
+    assert "ai_summary" in data
+    assert "key_points" in data
+    assert "category" in data
+
+    assert isinstance(data["id"], int)
+    assert isinstance(data["title"], str)
+    assert isinstance(data["url"], str)
+    assert isinstance(data["published_at"], str)
+    assert isinstance(data["summary"], str)
+    assert isinstance(data["content"], str)
