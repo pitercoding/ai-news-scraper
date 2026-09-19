@@ -189,10 +189,22 @@ def test_get_article_by_id():
     assert isinstance(data["content"], str)
 
 
-
 def test_get_article_not_found():
     response = client.get(
         "/articles/999999",
     )
 
     assert response.status_code == 404
+
+
+def test_get_categories():
+    response = client.get("/categories")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert isinstance(data, list)
+
+    for category in data:
+        assert isinstance(category, str)
