@@ -10,11 +10,14 @@ HEADERS = {
 }
 
 
-def parse_published_at(value: str) -> datetime:
-    return datetime.strptime(
-        value,
-        "%a, %d %b %Y %H:%M:%S %z",
-    )
+def parse_published_at(value: str) -> datetime | None:
+    try:
+        return datetime.strptime(
+            value,
+            "%a, %d %b %Y %H:%M:%S %z",
+        )
+    except ValueError:
+        return None
 
 
 def clean_summary(html: str) -> str:
@@ -46,12 +49,20 @@ def fetch_news(rss_url: str) -> list[dict]:
     articles = []
 
     for entry in feed.entries:
+        published_at = parse_published_at(
+            entry.get("published", "")
+        )
+
+        if published_at is None:
+            print(
+                f"Skipping article with invalid date: {entry.get('title', '')}"
+            )
+            continue
+
         article = {
             "title": entry.get("title", ""),
             "url": entry.get("link", ""),
-            "published_at": parse_published_at(
-                entry.get("published", "")
-            ),
+            "published_at": published_at,
             "summary": clean_summary(entry.get("summary", "")),
         }
 
