@@ -285,3 +285,15 @@ def test_get_articles_with_default_pagination():
 
     assert data["limit"] == 20
     assert data["offset"] == 0
+
+
+def test_get_articles_with_max_limit():
+    response = client.get(
+        "/articles?limit=100",
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["limit"] == 100
