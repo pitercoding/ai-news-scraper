@@ -224,3 +224,11 @@ def test_get_articles_with_limit_too_large():
     )
 
     assert response.status_code == 422
+
+
+def test_get_articles_with_negative_offset():
+    response = client.get(
+        "/articles?offset=-1",
+    )
+
+    assert response.status_code == 422
