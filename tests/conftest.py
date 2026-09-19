@@ -122,3 +122,26 @@ def test_database():
 
     test_engine.dispose()
     Path(db_file.name).unlink(missing_ok=True)
+
+
+@pytest.fixture
+def isolated_db():
+    db_file = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    db_file.close()
+
+    engine = create_engine(
+        f"sqlite:///{db_file.name}",
+        connect_args={"check_same_thread": False},
+    )
+
+    Base.metadata.create_all(engine)
+
+    original_engine = database.engine
+    database.engine = engine
+
+    yield engine
+
+    database.engine = original_engine
+
+    engine.dispose()
+    Path(db_file.name).unlink(missing_ok=True)
