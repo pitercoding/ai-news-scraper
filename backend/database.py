@@ -21,26 +21,43 @@ def create_tables():
     Base.metadata.create_all(engine)
 
 
-def article_exists(url: str) -> bool:
-    with Session(engine) as session:
-        statement = select(Article).where(
-            Article.url == url
+def _find_article_by_url(session: Session, url: str) -> Article | None:
+    statement = select(Article).where(
+        Article.url == url
+    )
+
+    return session.execute(statement).scalar_one_or_none()
+
+
+def _apply_article_filters(
+    statement,
+    category: str | None,
+    search: str | None,
+):
+    if category:
+        statement = statement.where(
+            Article.category == category
         )
 
-        existing_article = session.execute(statement).scalar_one_or_none()
+    if search:
+        search_pattern = f"%{search}%"
 
-        return existing_article is not None
+        statement = statement.where(
+            Article.title.ilike(search_pattern)
+            | Article.summary.ilike(search_pattern)
+        )
+
+    return statement
+
+
+def article_exists(url: str) -> bool:
+    with Session(engine) as session:
+        return _find_article_by_url(session, url) is not None
 
 
 def save_article(article_data: dict) -> bool:
     with Session(engine) as session:
-        statement = select(Article).where(
-            Article.url == article_data["url"]
-        )
-
-        existing_article = session.execute(statement).scalar_one_or_none()
-
-        if existing_article:
+        if _find_article_by_url(session, article_data["url"]):
             return False
 
         article = Article(**article_data)
@@ -62,18 +79,7 @@ def get_articles(
             Article.published_at.desc()
         )
 
-        if category:
-            statement = statement.where(
-                Article.category == category
-            )
-
-        if search:
-            search_pattern = f"%{search}%"
-
-            statement = statement.where(
-                Article.title.ilike(search_pattern)
-                | Article.summary.ilike(search_pattern)
-            )
+        statement = _apply_article_filters(statement, category, search)
 
         if limit is not None:
             statement = statement.limit(limit)
@@ -99,11 +105,7 @@ def get_articles_without_analysis():
 
 def get_article_by_url(url: str):
     with Session(engine) as session:
-        statement = select(Article).where(
-            Article.url == url
-        )
-
-        return session.execute(statement).scalar_one_or_none()
+        return _find_article_by_url(session, url)
 
 
 def get_article_by_id(article_id: int):
@@ -137,18 +139,7 @@ def count_articles(
             func.count(Article.id)
         )
 
-        if category:
-            statement = statement.where(
-                Article.category == category
-            )
-
-        if search:
-            search_pattern = f"%{search}%"
-
-            statement = statement.where(
-                Article.title.ilike(search_pattern)
-                | Article.summary.ilike(search_pattern)
-            )
+        statement = _apply_article_filters(statement, category, search)
 
         return session.execute(statement).scalar_one()
 
