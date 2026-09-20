@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 load_dotenv()
@@ -23,7 +23,10 @@ client = OpenAI(
 
 class ArticleAnalysis(BaseModel):
     summary: str
-    key_points: list[str]
+    key_points: list[str] = Field(
+        min_length=3,
+        max_length=3,
+    )
     category: str
 
 
