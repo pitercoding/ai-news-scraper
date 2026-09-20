@@ -175,3 +175,17 @@ def test_update_article_analysis_returns_false_for_unknown_id():
     )
 
     assert was_updated is False
+
+
+def test_get_articles_without_content_returns_only_empty_content(isolated_db):
+    empty = _make_article_data(url="https://example.com/empty", content="")
+    filled = _make_article_data(url="https://example.com/filled")
+
+    database.save_article(empty)
+    database.save_article(filled)
+
+    articles = database.get_articles_without_content()
+
+    assert [article.url for article in articles] == [
+        "https://example.com/empty"
+    ]

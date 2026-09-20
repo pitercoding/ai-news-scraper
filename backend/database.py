@@ -103,6 +103,17 @@ def get_articles_without_analysis():
         return result.scalars().all()
 
 
+def get_articles_without_content():
+    with Session(engine) as session:
+        statement = select(Article).where(
+            Article.content == ""
+        )
+
+        result = session.execute(statement)
+
+        return result.scalars().all()
+
+
 def get_article_by_url(url: str):
     with Session(engine) as session:
         return _find_article_by_url(session, url)
