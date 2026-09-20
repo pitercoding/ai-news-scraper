@@ -16,27 +16,32 @@ def main():
     for article in articles:
         print(f"Analyzing: {article.title}")
 
-        prompt = create_article_prompt(
-            title=article.title,
-            summary=article.summary,
-            content=article.content,
-        )
+        try:
+            prompt = create_article_prompt(
+                title=article.title,
+                summary=article.summary,
+                content=article.content,
+            )
 
-        analysis = analyze_article(prompt)
+            analysis = analyze_article(prompt)
 
-        key_points_json = json.dumps(
-            analysis.key_points,
-            ensure_ascii=False,
-        )
+            key_points_json = json.dumps(
+                analysis.key_points,
+                ensure_ascii=False,
+            )
 
-        update_article_analysis(
-            article_id=article.id,
-            ai_summary=analysis.summary,
-            key_points=key_points_json,
-            category=analysis.category,
-        )
+            update_article_analysis(
+                article_id=article.id,
+                ai_summary=analysis.summary,
+                key_points=key_points_json,
+                category=analysis.category,
+            )
 
-        print("Analysis saved.")
+            print("Analysis saved.")
+
+        except Exception as error:
+            print(f"Analysis failed: {error}")
+
         print("-" * 80)
 
 

@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
+from typing import Literal
 from pydantic import BaseModel, Field
 
 
@@ -27,7 +28,14 @@ class ArticleAnalysis(BaseModel):
         min_length=3,
         max_length=3,
     )
-    category: str
+    category: Literal[
+        "AI",
+        "Programming",
+        "Technology",
+        "Business",
+        "Science",
+        "Security",
+    ]
 
 
 def ask_openai(prompt: str) -> str:
