@@ -55,27 +55,32 @@ def main():
 
             print("Sending article to OpenAI...")
 
-            prompt = create_article_prompt(
-                title=saved_article.title,
-                summary=saved_article.summary,
-                content=saved_article.content,
-            )
+            try:
+                prompt = create_article_prompt(
+                    title=saved_article.title,
+                    summary=saved_article.summary,
+                    content=saved_article.content,
+                )
 
-            analysis = analyze_article(prompt)
+                analysis = analyze_article(prompt)
 
-            key_points_json = json.dumps(
-                analysis.key_points,
-                ensure_ascii=False,
-            )
+                key_points_json = json.dumps(
+                    analysis.key_points,
+                    ensure_ascii=False,
+                )
 
-            update_article_analysis(
-                article_id=saved_article.id,
-                ai_summary=analysis.summary,
-                key_points=key_points_json,
-                category=analysis.category,
-            )
+                update_article_analysis(
+                    article_id=saved_article.id,
+                    ai_summary=analysis.summary,
+                    key_points=key_points_json,
+                    category=analysis.category,
+                )
 
-            print("Article processed successfully.")
+                print("Article processed successfully.")
+
+            except Exception as error:
+                print(f"Analysis failed: {error}")
+
             print("")
 
     print("==========================================")
