@@ -1,3 +1,6 @@
+from typing import get_args
+
+from ai.client import ArticleAnalysis
 from ai.prepare import create_article_prompt, prepare_article_for_ai
 
 
@@ -83,7 +86,40 @@ def test_create_article_prompt_lists_all_allowed_categories():
         "Science",
         "Security",
     ]:
-        assert f"- {category}\n" in prompt
+        assert f"- {category}: " in prompt
+
+
+def test_create_article_prompt_lists_exactly_the_schema_categories():
+    prompt = create_article_prompt(
+        title="Title",
+        summary="Summary",
+        content="Content",
+    )
+
+    schema_categories = set(
+        get_args(ArticleAnalysis.model_fields["category"].annotation)
+    )
+
+    prompt_categories = {
+        line[2:].split(":")[0]
+        for line in prompt.split("ARTICLE:")[0].splitlines()
+        if line.startswith("- ")
+    }
+
+    assert prompt_categories == schema_categories
+
+
+def test_create_article_prompt_defines_categories_by_primary_subject():
+    prompt = create_article_prompt(
+        title="Title",
+        summary="Summary",
+        content="Content",
+    )
+
+    assert "PRIMARY subject" in prompt
+    assert "merely includes AI features belongs in Technology" in prompt
+    assert "cybersecurity" in prompt
+    assert "Do not use it for physical safety" in prompt
 
 
 def test_create_article_prompt_puts_article_after_instructions():
