@@ -80,6 +80,24 @@ def test_count_articles_by_category_and_search():
     assert database.count_articles(category="AI", search="python") == 1
 
 
+def test_get_articles_includes_unanalyzed_articles_by_default():
+    assert len(database.get_articles()) == 6
+    assert database.count_articles() == 6
+
+
+def test_get_articles_analyzed_only_excludes_unanalyzed_articles():
+    articles = database.get_articles(analyzed_only=True)
+
+    assert len(articles) == 4
+    assert all(article.ai_summary is not None for article in articles)
+
+
+def test_count_articles_analyzed_only_matches_visible_articles():
+    assert database.count_articles(analyzed_only=True) == 4
+    assert database.count_articles(search="python", analyzed_only=True) == 2
+    assert database.count_articles(category="Security", analyzed_only=True) == 0
+
+
 def test_get_articles_without_analysis_returns_only_unanalyzed_articles():
     articles = database.get_articles_without_analysis()
 

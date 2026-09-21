@@ -41,11 +41,13 @@ def list_articles(
         search=search,
         limit=limit,
         offset=offset,
+        analyzed_only=True,
     )
 
     total = count_articles(
         category=category,
         search=search,
+        analyzed_only=True,
     )
 
     return {

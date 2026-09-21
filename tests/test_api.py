@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from api import app
+from database import get_articles_without_analysis
 
 client = TestClient(app)
 
@@ -297,3 +298,75 @@ def test_get_articles_with_max_limit():
     data = response.json()
 
     assert data["limit"] == 100
+
+
+PENDING_TITLES = {
+    "Security vulnerability found in popular library",
+    "Deep dive into python asyncio internals",
+}
+
+
+def test_get_articles_excludes_articles_without_analysis():
+    response = client.get("/articles?limit=100")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    titles = {article["title"] for article in data["items"]}
+
+    assert data["total"] == 4
+    assert len(data["items"]) == 4
+    assert titles.isdisjoint(PENDING_TITLES)
+
+    for article in data["items"]:
+        assert article["ai_summary"] is not None
+
+
+def test_get_articles_total_matches_visible_articles_across_pages():
+    first = client.get("/articles?limit=2&offset=0").json()
+    second = client.get("/articles?limit=2&offset=2").json()
+    beyond = client.get("/articles?limit=2&offset=4").json()
+
+    assert first["total"] == second["total"] == beyond["total"] == 4
+    assert len(first["items"]) == 2
+    assert len(second["items"]) == 2
+    assert beyond["items"] == []
+
+    ids = [a["id"] for a in first["items"] + second["items"]]
+
+    assert len(set(ids)) == 4
+
+
+def test_get_articles_search_does_not_return_pending_articles():
+    python_response = client.get("/articles?search=python").json()
+    pending_only_response = client.get("/articles?search=asyncio").json()
+
+    assert python_response["total"] == 2
+    assert all(
+        article["title"] not in PENDING_TITLES
+        for article in python_response["items"]
+    )
+
+    assert pending_only_response["items"] == []
+    assert pending_only_response["total"] == 0
+
+
+def test_get_articles_category_filter_does_not_return_pending_articles():
+    response = client.get("/articles?category=Security").json()
+
+    assert response["items"] == []
+    assert response["total"] == 0
+
+
+def test_get_article_by_id_still_returns_pending_article():
+    pending = get_articles_without_analysis()[0]
+
+    response = client.get(f"/articles/{pending.id}")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["id"] == pending.id
+    assert data["ai_summary"] is None

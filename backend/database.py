@@ -33,7 +33,13 @@ def _apply_article_filters(
     statement,
     category: str | None,
     search: str | None,
+    analyzed_only: bool = False,
 ):
+    if analyzed_only:
+        statement = statement.where(
+            Article.ai_summary.is_not(None)
+        )
+
     if category:
         statement = statement.where(
             Article.category == category
@@ -73,13 +79,19 @@ def get_articles(
     search: str | None = None,
     limit: int | None = None,
     offset: int | None = None,
+    analyzed_only: bool = False,
 ):
     with Session(engine) as session:
         statement = select(Article).order_by(
             Article.published_at.desc()
         )
 
-        statement = _apply_article_filters(statement, category, search)
+        statement = _apply_article_filters(
+            statement,
+            category,
+            search,
+            analyzed_only,
+        )
 
         if limit is not None:
             statement = statement.limit(limit)
@@ -144,13 +156,19 @@ def get_categories():
 def count_articles(
     category: str | None = None,
     search: str | None = None,
+    analyzed_only: bool = False,
 ):
     with Session(engine) as session:
         statement = select(
             func.count(Article.id)
         )
 
-        statement = _apply_article_filters(statement, category, search)
+        statement = _apply_article_filters(
+            statement,
+            category,
+            search,
+            analyzed_only,
+        )
 
         return session.execute(statement).scalar_one()
 
