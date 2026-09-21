@@ -98,6 +98,23 @@ def test_count_articles_analyzed_only_matches_visible_articles():
     assert database.count_articles(category="Security", analyzed_only=True) == 0
 
 
+def test_get_articles_without_analysis_excludes_articles_without_content(
+    isolated_db,
+):
+    database.save_article(
+        _make_article_data(url="https://example.com/with-content")
+    )
+    database.save_article(
+        _make_article_data(url="https://example.com/no-content", content="")
+    )
+
+    articles = database.get_articles_without_analysis()
+
+    assert [article.url for article in articles] == [
+        "https://example.com/with-content"
+    ]
+
+
 def test_get_articles_without_analysis_returns_only_unanalyzed_articles():
     articles = database.get_articles_without_analysis()
 

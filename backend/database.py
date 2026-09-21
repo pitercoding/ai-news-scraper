@@ -107,7 +107,8 @@ def get_articles(
 def get_articles_without_analysis():
     with Session(engine) as session:
         statement = select(Article).where(
-            Article.ai_summary.is_(None)
+            Article.ai_summary.is_(None),
+            Article.content != "",
         )
 
         result = session.execute(statement)

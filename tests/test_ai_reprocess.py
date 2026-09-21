@@ -118,6 +118,34 @@ def test_main_does_nothing_when_all_articles_are_analyzed(
     assert unchanged.ai_summary == "Existing summary."
 
 
+def test_main_skips_articles_without_content(isolated_db, monkeypatch):
+    database.save_article(
+        {
+            "title": "No content yet",
+            "url": "https://example.com/no-content",
+            "summary": "A test summary.",
+            "content": "",
+            "published_at": datetime.now(timezone.utc),
+        }
+    )
+
+    prompts = []
+
+    def fake_analyze(prompt):
+        prompts.append(prompt)
+
+        return _make_analysis()
+
+    monkeypatch.setattr(reprocess, "analyze_article", fake_analyze)
+
+    reprocess.main()
+
+    article = database.get_article_by_url("https://example.com/no-content")
+
+    assert prompts == []
+    assert article.ai_summary is None
+
+
 def test_main_continues_after_individual_failure(
     isolated_db,
     monkeypatch,

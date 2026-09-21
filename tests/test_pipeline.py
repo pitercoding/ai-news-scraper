@@ -264,13 +264,38 @@ def test_analyze_articles_saves_analysis(isolated_db, monkeypatch):
     ]
 
 
+def test_analyze_articles_skips_articles_without_content(
+    isolated_db,
+    monkeypatch,
+):
+    article = _save_article("https://example.com/a", content="")
+
+    def fail_if_called(prompt):
+        raise AssertionError("analyze_article should not be called")
+
+    monkeypatch.setattr(run, "analyze_article", fail_if_called)
+
+    result = run.analyze_articles()
+
+    assert result == {"analyzed": 0, "failed": 0}
+    assert database.get_article_by_id(article.id).ai_summary is None
+
+
 def test_analyze_articles_continues_after_individual_failure(
     isolated_db,
     monkeypatch,
     capsys,
 ):
-    failing = _save_article("https://example.com/fail", title="Failing")
-    working = _save_article("https://example.com/ok", title="Working")
+    failing = _save_article(
+        "https://example.com/fail",
+        title="Failing",
+        content="Some content.",
+    )
+    working = _save_article(
+        "https://example.com/ok",
+        title="Working",
+        content="Some content.",
+    )
 
     def fake_analyze(prompt):
         if "Failing" in prompt:
@@ -356,3 +381,52 @@ def test_main_retries_pending_articles_on_next_run(isolated_db, monkeypatch):
 
     assert article.content == "Recovered content."
     assert database.get_articles_without_content() == []
+
+
+def test_main_analyzes_article_only_after_content_is_recovered(
+    isolated_db,
+    monkeypatch,
+):
+    monkeypatch.setattr(run, "create_tables", lambda: None)
+    monkeypatch.setattr(run, "FEED_URLS", [FEED_URL])
+    monkeypatch.setattr(
+        run,
+        "fetch_news",
+        lambda feed_url: [_make_feed_article(NEWS_URL)],
+    )
+
+    prompts = []
+
+    def fake_analyze(prompt):
+        prompts.append(prompt)
+
+        return _make_analysis()
+
+    monkeypatch.setattr(run, "analyze_article", fake_analyze)
+
+    def failing_fetch(url):
+        raise RuntimeError("site down")
+
+    monkeypatch.setattr(run, "fetch_article_content", failing_fetch)
+
+    run.main()
+
+    article = database.get_article_by_url(NEWS_URL)
+
+    assert prompts == []
+    assert article.content == ""
+    assert article.ai_summary is None
+
+    monkeypatch.setattr(
+        run,
+        "fetch_article_content",
+        lambda url: "Recovered content.",
+    )
+
+    run.main()
+
+    article = database.get_article_by_url(NEWS_URL)
+
+    assert len(prompts) == 1
+    assert "Recovered content." in prompts[0]
+    assert article.ai_summary == "AI generated summary."
