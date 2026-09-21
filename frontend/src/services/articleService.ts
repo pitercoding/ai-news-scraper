@@ -1,5 +1,4 @@
 import {
-    Article,
     ArticleDetails,
     ArticlePaginationResponse,
 } from "@/types/article";

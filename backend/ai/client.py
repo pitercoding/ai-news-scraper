@@ -38,15 +38,6 @@ class ArticleAnalysis(BaseModel):
     ]
 
 
-def ask_openai(prompt: str) -> str:
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=prompt,
-    )
-
-    return response.output_text
-
-
 def analyze_article(prompt: str) -> ArticleAnalysis:
     response = client.responses.parse(
         model="gpt-5-mini",
