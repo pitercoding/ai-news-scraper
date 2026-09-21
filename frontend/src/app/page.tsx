@@ -58,7 +58,7 @@ export default async function Home({
       </div>
 
       {data.items.length > 0 ? (
-        <section>
+        <section className="article-grid">
           {data.items.map((article) => (
             <ArticleCard
               key={article.id}

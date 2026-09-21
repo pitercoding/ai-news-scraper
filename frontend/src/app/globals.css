@@ -39,7 +39,7 @@ main>p {
   color: var(--muted);
 }
 
-section {
+.article-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
@@ -292,6 +292,8 @@ section {
   color: var(--foreground);
   font-size: 16px;
   line-height: 1.8;
+  text-align: justify;
+  overflow-wrap: break-word;
 }
 
 .article-details-content p:last-child,
@@ -307,6 +309,8 @@ section {
 .article-details-section li {
   margin-bottom: 14px;
   line-height: 1.7;
+  text-align: justify;
+  overflow-wrap: break-word;
 }
 
 .article-details-section li:last-child {
@@ -411,6 +415,11 @@ section {
   text-align: center;
 }
 
+.loading,
+.error-page {
+  margin: 48px auto;
+}
+
 .empty-state h2,
 .error-page h1 {
   margin: 0 0 8px;
@@ -443,7 +452,7 @@ section {
 }
 
 @media (max-width: 900px) {
-  section {
+  .article-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -458,7 +467,7 @@ section {
     font-size: 30px;
   }
 
-  section {
+  .article-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
@@ -522,5 +531,14 @@ section {
   .article-details>.article-link {
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (max-width: 360px) {
+
+  .article-details-content p,
+  .article-details-section p,
+  .article-details-section li {
+    text-align: left;
   }
 }
