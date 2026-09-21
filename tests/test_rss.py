@@ -1,6 +1,59 @@
 from datetime import datetime, timezone
 
+import pytest
+
 from scraper import rss
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://tecnoblog.net/noticias/google-corrige-falhas-no-chrome/",
+        "https://tecnoblog.net/noticias/google-corrige-falhas-no-chrome",
+        "https://tecnoblog.net/noticias/google-corrige-falhas-no-chrome/?utm=x",
+    ],
+)
+def test_is_news_article_accepts_news_urls(url):
+    assert rss.is_news_article(url) is True
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://tecnoblog.net/achados/garmin-forerunner-165-com-desconto/",
+        "https://tecnoblog.net/guias/melhor-fone-de-ouvido-bluetooth/",
+        "https://tecnoblog.net/responde/como-esconder-stories-no-instagram/",
+        "https://tecnoblog.net/especiais/os-limites-do-open-source/",
+    ],
+)
+def test_is_news_article_rejects_non_news_sections(url):
+    assert rss.is_news_article(url) is False
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://tecnoblog.net/videos/algum-video/",
+        "https://tecnoblog.net/achados/noticias/",
+        "https://tecnoblog.net/noticias-especiais/algum-artigo/",
+    ],
+)
+def test_is_news_article_rejects_unknown_paths(url):
+    assert rss.is_news_article(url) is False
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://tecnoblog.net/",
+        "https://tecnoblog.net/noticias/",
+        "https://tecnoblog.net/noticias",
+        "not a url",
+        "",
+    ],
+)
+def test_is_news_article_rejects_invalid_or_incomplete_urls(url):
+    assert rss.is_news_article(url) is False
 
 
 def test_parse_published_at_parses_valid_rfc822_date():

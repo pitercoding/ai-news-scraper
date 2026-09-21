@@ -7,6 +7,7 @@ from pipeline import run
 
 
 FEED_URL = "https://example.com/feed/"
+NEWS_URL = "https://example.com/noticias/a"
 
 
 def _make_feed_article(url, title="Feed Article"):
@@ -47,14 +48,14 @@ def test_ingest_articles_saves_new_articles_with_empty_content(
     monkeypatch.setattr(
         run,
         "fetch_news",
-        lambda feed_url: [_make_feed_article("https://example.com/a")],
+        lambda feed_url: [_make_feed_article(NEWS_URL)],
     )
 
     result = run.ingest_articles([FEED_URL])
 
-    saved = database.get_article_by_url("https://example.com/a")
+    saved = database.get_article_by_url(NEWS_URL)
 
-    assert result == {"new": 1, "existing": 0, "failed_feeds": 0}
+    assert result == {"new": 1, "existing": 0, "skipped": 0, "failed_feeds": 0}
     assert saved.title == "Feed Article"
     assert saved.content == ""
     assert saved.ai_summary is None
@@ -64,31 +65,76 @@ def test_ingest_articles_skips_articles_already_in_database(
     isolated_db,
     monkeypatch,
 ):
-    _save_article("https://example.com/a", content="Existing content.")
+    _save_article(NEWS_URL, content="Existing content.")
 
     monkeypatch.setattr(
         run,
         "fetch_news",
         lambda feed_url: [
-            _make_feed_article("https://example.com/a"),
-            _make_feed_article("https://example.com/b"),
+            _make_feed_article(NEWS_URL),
+            _make_feed_article("https://example.com/noticias/b"),
         ],
     )
 
     result = run.ingest_articles([FEED_URL])
 
-    existing = database.get_article_by_url("https://example.com/a")
+    existing = database.get_article_by_url(NEWS_URL)
 
-    assert result == {"new": 1, "existing": 1, "failed_feeds": 0}
+    assert result == {"new": 1, "existing": 1, "skipped": 0, "failed_feeds": 0}
     assert existing.content == "Existing content."
     assert database.count_articles() == 2
+
+
+def test_ingest_articles_skips_non_news_articles(
+    isolated_db,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        run,
+        "fetch_news",
+        lambda feed_url: [
+            _make_feed_article(NEWS_URL),
+            _make_feed_article("https://example.com/achados/oferta"),
+            _make_feed_article("https://example.com/guias/melhor-fone"),
+            _make_feed_article("https://example.com/responde/como-fazer"),
+        ],
+    )
+
+    result = run.ingest_articles([FEED_URL])
+
+    assert result == {"new": 1, "existing": 0, "skipped": 3, "failed_feeds": 0}
+    assert database.count_articles() == 1
+    assert database.get_article_by_url(NEWS_URL) is not None
+    assert (
+        database.get_article_by_url("https://example.com/achados/oferta")
+        is None
+    )
+
+
+def test_ingest_articles_does_not_save_when_feed_has_only_non_news(
+    isolated_db,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        run,
+        "fetch_news",
+        lambda feed_url: [
+            _make_feed_article("https://example.com/achados/oferta"),
+        ],
+    )
+
+    result = run.ingest_articles([FEED_URL])
+
+    assert result == {"new": 0, "existing": 0, "skipped": 1, "failed_feeds": 0}
+    assert database.count_articles() == 0
+    assert database.get_articles_without_content() == []
 
 
 def test_ingest_articles_is_idempotent_across_runs(isolated_db, monkeypatch):
     monkeypatch.setattr(
         run,
         "fetch_news",
-        lambda feed_url: [_make_feed_article("https://example.com/a")],
+        lambda feed_url: [_make_feed_article(NEWS_URL)],
     )
 
     run.ingest_articles([FEED_URL])
@@ -108,7 +154,7 @@ def test_ingest_articles_continues_after_feed_failure(
         if feed_url == "https://broken.example.com/feed/":
             raise RuntimeError("feed unavailable")
 
-        return [_make_feed_article("https://example.com/a")]
+        return [_make_feed_article(NEWS_URL)]
 
     monkeypatch.setattr(run, "fetch_news", fake_fetch_news)
 
@@ -116,7 +162,7 @@ def test_ingest_articles_continues_after_feed_failure(
         ["https://broken.example.com/feed/", FEED_URL]
     )
 
-    assert result == {"new": 1, "existing": 0, "failed_feeds": 1}
+    assert result == {"new": 1, "existing": 0, "skipped": 0, "failed_feeds": 1}
     assert "Feed failed: feed unavailable" in capsys.readouterr().out
 
 
@@ -251,7 +297,7 @@ def test_main_runs_full_pipeline(isolated_db, monkeypatch):
     monkeypatch.setattr(
         run,
         "fetch_news",
-        lambda feed_url: [_make_feed_article("https://example.com/a")],
+        lambda feed_url: [_make_feed_article(NEWS_URL)],
     )
     monkeypatch.setattr(
         run,
@@ -266,7 +312,7 @@ def test_main_runs_full_pipeline(isolated_db, monkeypatch):
 
     run.main()
 
-    article = database.get_article_by_url("https://example.com/a")
+    article = database.get_article_by_url(NEWS_URL)
 
     assert article.content == "Full article content."
     assert article.ai_summary == "AI generated summary."
@@ -281,7 +327,7 @@ def test_main_retries_pending_articles_on_next_run(isolated_db, monkeypatch):
     monkeypatch.setattr(
         run,
         "fetch_news",
-        lambda feed_url: [_make_feed_article("https://example.com/a")],
+        lambda feed_url: [_make_feed_article(NEWS_URL)],
     )
 
     def failing_fetch(url):
@@ -306,7 +352,7 @@ def test_main_retries_pending_articles_on_next_run(isolated_db, monkeypatch):
 
     run.main()
 
-    article = database.get_article_by_url("https://example.com/a")
+    article = database.get_article_by_url(NEWS_URL)
 
     assert article.content == "Recovered content."
     assert database.get_articles_without_content() == []

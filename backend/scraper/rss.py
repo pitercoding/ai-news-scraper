@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import urlparse
 
 import feedparser
 import requests
@@ -8,6 +9,18 @@ from bs4 import BeautifulSoup
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; ai-news-scraper/1.0)"
 }
+
+NEWS_SECTIONS = {"noticias"}
+
+
+def is_news_article(url: str) -> bool:
+    segments = [
+        segment
+        for segment in urlparse(url).path.split("/")
+        if segment
+    ]
+
+    return len(segments) >= 2 and segments[0] in NEWS_SECTIONS
 
 
 def parse_published_at(value: str) -> datetime | None:

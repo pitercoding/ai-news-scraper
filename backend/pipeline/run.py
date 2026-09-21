@@ -16,7 +16,7 @@ from database import (
     update_article_analysis,
     update_article_content,
 )
-from scraper.rss import fetch_article_content, fetch_news
+from scraper.rss import fetch_article_content, fetch_news, is_news_article
 
 
 FEED_URLS = [
@@ -27,6 +27,7 @@ FEED_URLS = [
 def ingest_articles(feed_urls: list[str]) -> dict:
     new_articles = 0
     existing_articles = 0
+    skipped_articles = 0
     failed_feeds = 0
 
     for feed_url in feed_urls:
@@ -43,6 +44,10 @@ def ingest_articles(feed_urls: list[str]) -> dict:
         print(f"Found {len(articles)} articles.")
 
         for article in articles:
+            if not is_news_article(article["url"]):
+                skipped_articles += 1
+                continue
+
             was_saved = save_article(
                 {**article, "content": ""}
             )
@@ -56,6 +61,7 @@ def ingest_articles(feed_urls: list[str]) -> dict:
     return {
         "new": new_articles,
         "existing": existing_articles,
+        "skipped": skipped_articles,
         "failed_feeds": failed_feeds,
     }
 
@@ -159,6 +165,7 @@ def main():
     print("==========================================")
     print(f"New articles: {ingestion['new']}")
     print(f"Existing articles: {ingestion['existing']}")
+    print(f"Skipped (not news): {ingestion['skipped']}")
     print(f"Failed feeds: {ingestion['failed_feeds']}")
     print(f"Contents extracted: {extraction['extracted']}")
     print(f"Content failures: {extraction['failed']}")
