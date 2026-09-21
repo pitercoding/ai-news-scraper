@@ -36,6 +36,8 @@ export default function SearchBar() {
             params.delete("search");
         }
 
+        params.delete("page");
+
         router.push(`/?${params.toString()}`);
     }
 

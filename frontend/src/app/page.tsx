@@ -24,7 +24,7 @@ export default async function Home({
 
   const limit = 12;
 
-  const page = Number(params.page) || 1;
+  const page = Math.max(1, Math.floor(Number(params.page)) || 1);
 
   const offset = (page - 1) * limit;
 

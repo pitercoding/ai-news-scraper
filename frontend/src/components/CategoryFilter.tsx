@@ -34,6 +34,8 @@ export default function CategoryFilter({
             params.delete("category");
         }
 
+        params.delete("page");
+
         router.push(`/?${params.toString()}`);
     }
 
